@@ -46,6 +46,9 @@ app.use((req, _res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/assets', express.static(path.join(__dirname, 'public'), { index: false }));
+app.use('/vendor/react', express.static(path.join(__dirname, 'node_modules', 'react', 'umd'), { index: false }));
+app.use('/vendor/react-dom', express.static(path.join(__dirname, 'node_modules', 'react-dom', 'umd'), { index: false }));
 
 app.use(
   session({

@@ -18,7 +18,8 @@ Se ha eliminado el sitio publico y el resto de modulos ajenos a este flujo.
 
 - Node.js + Express
 - MySQL con `mysql2/promise`
-- HTML, CSS y JavaScript sin framework
+- React en cliente para el login, el formulario de creacion y la pantalla principal del libro
+- HTML, CSS y JavaScript para las pantallas multipagina
 - Sesion de servidor para el acceso privado
 - Tests con `node --test` y `supertest`
 
