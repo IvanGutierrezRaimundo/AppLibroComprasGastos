@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Crear registro</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .crear-page{
+      max-width: 860px;
+      margin: 22px auto;
+      padding: 0 14px;
+    }
+    .crear-head{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .crear-head h1{
+      margin: 0;
+      color: var(--color-brown);
+    }
+    .crear-head-actions{
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .registro-form{
+      margin: 0;
+      padding: 24px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: #FFF;
+      box-shadow: var(--shadow-sm);
+    }
+    .registro-form-grid{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .registro-form-grid .field-full{ grid-column: 1 / -1; }
+    .registro-form .field label{
+      display: block;
+      margin-bottom: 6px;
+      color: var(--color-brown);
+      font-weight: 700;
+    }
+    .tipo-ayuda{
+      display: none;
+      margin-top: 8px;
+      padding: 9px 11px;
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--color-primary);
+      border-radius: 8px;
+      background: #FFFDF0;
+      color: var(--color-brown);
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+    .tipo-ayuda.is-visible{ display: block; }
+    .registro-form input,
+    .registro-form select{
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .resultado-fieldset{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+      margin: 22px 0 0;
+      padding: 16px;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      background: #FFFDF0;
+    }
+    .resultado-fieldset legend{
+      padding: 0 8px;
+      color: var(--color-brown);
+      font-weight: 800;
+    }
+    .resultado-linea{
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .resultado-linea.total{
+      grid-column: 1 / -1;
+      padding-top: 12px;
+      border-top: 1px solid var(--color-border);
+      font-weight: 800;
+    }
+    .resultado-valor{
+      color: var(--color-brown);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .resultado-ayuda{
+      grid-column: 1 / -1;
+      margin: 0;
+      color: var(--color-muted);
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+    .registro-form-actions{
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .registro-status{
+      min-height: 1.4em;
+      margin: 14px 0 0;
+      color: #8A3D3D;
+      font-weight: 600;
+    }
+    .proveedor-picker-modal{
+      width: min(760px, 96vw);
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .proveedor-picker-table-wrap{
+      border: 1px solid #d8dfec;
+      border-radius: 10px;
+      overflow: auto;
+      max-height: min(56vh, 420px);
+      background: #fff;
+    }
+    .proveedor-picker-table{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    .proveedor-picker-table th,
+    .proveedor-picker-table td{
+      padding: 9px 11px;
+      border-bottom: 1px solid #edf1f7;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .proveedor-picker-table th{
+      position: sticky;
+      top: 0;
+      background: #f4f7fd;
+      z-index: 1;
+    }
+    .proveedor-picker-row{ cursor: pointer; }
+    .proveedor-picker-row:hover{ background: #f8fbff; }
+    .proveedor-picker-row.is-selected{ background: #e6f0ff; }
+    .proveedor-picker-status{ margin: 0; font-size: 0.92rem; color: #2f3e54; }
+    .proveedor-picker-status.error{ color: #b42318; }
+    .proveedor-picker-search{
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #c8d3e2;
+      border-radius: 9px;
+      padding: 9px 10px;
+      font: inherit;
+      background: #fff;
+    }
+    .proveedor-picker-search:focus{
+      outline: 2px solid #9bc0ff;
+      outline-offset: 1px;
+      border-color: #89b1f7;
+    }
+    .proveedor-picker-empty{ margin: 0; padding: 14px; color: #5f6f87; }
+    @media (max-width: 680px){
+      .crear-page{
+        margin-top: 14px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      .crear-head{
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .crear-head-actions{ width: 100%; }
+      .crear-head-actions button{ flex: 1 1 auto; }
+      .registro-form{ padding: 18px; }
+      .registro-form-grid{ grid-template-columns: 1fr; gap: 14px; }
+      .registro-form-grid .field-full{ grid-column: auto; }
+      .registro-form-actions{ flex-direction: column-reverse; }
+      .registro-form-actions button{ width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="crear-page">
+    <header class="crear-head">
+      <h1>Crear registro</h1>
+      <div class="crear-head-actions">
+        <button type="button" id="selectProveedorBtn">Seleccionar proveedor</button>
+        <button type="button" id="volverBtn">Volver al libro</button>
+      </div>
+    </header>
+
+    <form id="registroForm" class="registro-form" novalidate>
+      <div class="registro-form-grid">
+        <div class="field field-full">
+          <label for="fecha_text">Fecha factura</label>
+          <div class="input-with-icon">
+            <input id="fecha_text" name="fecha_text" inputmode="numeric" placeholder="dd/mm/aa" pattern="\d{2}/\d{2}/\d{2}" required>
+            <button type="button" id="open-cal" class="icon-btn" aria-label="Abrir calendario" title="Abrir calendario">📅</button>
+            <input type="date" id="fecha_picker" class="visually-hidden">
+          </div>
+          <div class="hint">Formato: dd/mm/aa (ej. 03/02/26)</div>
+        </div>
+
+        <div class="field field-full">
+          <label for="proveedorNombre">Proveedor (nombre)</label>
+          <input id="proveedorNombre" name="proveedor_nombre" type="text" maxlength="150" autocomplete="organization" required />
+        </div>
+
+        <div class="field">
+          <label for="nifCif">N.I.F. / C.I.F.    (Sin espacios ni guiones) </label>
+          <input id="nifCif" name="nif_cif" type="text" maxlength="20" autocomplete="off" required />
+        </div>
+
+        <div class="field">
+          <label for="numeroFactura">Nº factura</label>
+          <input id="numeroFactura" name="numero_factura" type="text" maxlength="50" required />
+        </div>
+
+        <div class="field field-full">
+          <label for="tipoCompraGasto">Tipo compra/gasto</label>
+          <select id="tipoCompraGasto" name="tipo_compra_gasto" required>
+            <option value="" selected disabled>Selecciona una opción</option>
+            <option value="Compras y servicios" title="Harina, vasos, asesoría...">Compras y servicios</option>
+            <option value="Alquileres" title="Tiene retención.">Alquileres</option>
+            <option value="Reparaciones" title="Reparaciones.">Reparaciones</option>
+            <option value="Suministros" title="Agua, luz, teléfono...">Suministros</option>
+            <option value="Tributos" title="IRPF, IBI, tasas de ayuntamiento... Sin IVA.">Tributos</option>
+            <option value="Sueldos/salarios" title="Incluye IRPF y S.S. de empleados. Sin IVA.">Sueldos/salarios</option>
+            <option value="S.S/autónomos" title="S.S. a cargo de la empresa de empleados y cuota de autónomo propia. Sin IVA.">S.S/autónomos</option>
+            <option value="Inversiones" title="Mobiliario, máquinas, vehículos...">Inversiones</option>
+            <option value="Otros" title="Incluye seguros y bancos que no llevan IVA.">Otros</option>
+          </select>
+          <div id="tipoAyuda" class="tipo-ayuda" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <label for="iva4">Base IVA 4%</label>
+          <input id="iva4" name="iva_4" type="number" min="0" step="0.01" inputmode="decimal" value="0" />
+        </div>
+
+        <div class="field">
+          <label for="iva10">Base IVA 10%</label>
+          <input id="iva10" name="iva_10" type="number" min="0" step="0.01" inputmode="decimal" value="0" />
+        </div>
+
+        <div class="field">
+          <label for="iva21">Base IVA 21%</label>
+          <input id="iva21" name="iva_21" type="number" min="0" step="0.01" inputmode="decimal" value="0" />
+        </div>
+
+        <div class="field">
+          <label for="iva0">Base IVA 0% (Sin IVA)</label>
+          <input id="iva0" name="iva_0" type="number" min="0" step="0.01" inputmode="decimal" value="0" />
+        </div>
+
+        <div class="field">
+          <label for="retPercent">RETENCION %</label>
+          <input id="retPercent" name="ret_percent" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="0" />
+        </div>
+      </div>
+
+      <fieldset class="resultado-fieldset">
+        <legend>Resultados</legend>
+        <div class="resultado-linea">
+          <span>Cuota IVA 4%</span>
+          <output id="resultadoIva4" class="resultado-valor">0,00 €</output>
+        </div>
+        <div class="resultado-linea">
+          <span>Cuota IVA 10%</span>
+          <output id="resultadoIva10" class="resultado-valor">0,00 €</output>
+        </div>
+        <div class="resultado-linea">
+          <span>Cuota IVA 21%</span>
+          <output id="resultadoIva21" class="resultado-valor">0,00 €</output>
+        </div>
+        <div class="resultado-linea">
+          <span>Retención</span>
+          <output id="resultadoRetencion" class="resultado-valor">0,00 €</output>
+        </div>
+        <div class="resultado-linea">
+          <span>Total IVA</span>
+          <output id="resultadoTotalIva" class="resultado-valor">0,00 €</output>
+        </div>
+        <div class="resultado-linea">
+          <span>Total sin IVA</span>
+          <output id="resultadoTotalSinIva" class="resultado-valor">0,00 €</output>
+        </div>
+        <div class="resultado-linea total">
+          <span>Total de la factura</span>
+          <output id="resultadoTotal" class="resultado-valor">0,00 €</output>
+        </div>
+        <p class="resultado-ayuda">Compruebe que el total coincide con el Total de la factura impresa o en pdf</p>
+      </fieldset>
+
+      <p id="registroStatus" class="registro-status" aria-live="polite"></p>
+      <div class="registro-form-actions">
+        <button type="button" id="cancelarBtn">Cancelar</button>
+        <button type="submit" id="guardarBtn">Guardar registro</button>
+      </div>
+    </form>
+  </main>
+
+  <div id="proveedor-picker-modal" class="confirm-modal-backdrop hidden" aria-hidden="true">
+    <div class="confirm-modal proveedor-picker-modal" role="dialog" aria-modal="true" aria-labelledby="proveedor-picker-title">
+      <button type="button" id="proveedor-picker-close" class="confirm-close" aria-label="Cerrar">×</button>
+      <h2 id="proveedor-picker-title">Seleccionar proveedor</h2>
+      <p class="confirm-intro">Elige un proveedor para rellenar su nombre y N.I.F. / C.I.F.</p>
+      <input type="search" id="proveedor-picker-search" class="proveedor-picker-search" placeholder="Buscar por nombre o NIF/CIF" autocomplete="off" aria-label="Buscar proveedor">
+      <p id="proveedor-picker-status" class="proveedor-picker-status" aria-live="polite">Cargando proveedores...</p>
+      <div class="proveedor-picker-table-wrap">
+        <table class="proveedor-picker-table" aria-label="Proveedores disponibles">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>N.I.F. / C.I.F.</th>
+              <th>Teléfono</th>
+            </tr>
+          </thead>
+          <tbody id="proveedor-picker-body"></tbody>
+        </table>
+      </div>
+      <div class="confirm-actions">
+        <button type="button" id="proveedor-picker-cancel" class="ghost">Cancelar</button>
+        <button type="button" id="proveedor-picker-accept" disabled>Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('registroForm');
+    const status = document.getElementById('registroStatus');
+    const guardarBtn = document.getElementById('guardarBtn');
+    const ivaInputs = ['iva4', 'iva10', 'iva21', 'iva0', 'retPercent'];
+    const tipoCompraGasto = document.getElementById('tipoCompraGasto');
+    const tipoAyuda = document.getElementById('tipoAyuda');
+    const tipoAyudas = {
+      'Compras y servicios': 'Harina, vasos, asesoría...',
+      'Alquileres': 'Tiene retención.',
+      'Reparaciones': 'Reparaciones.',
+      'Suministros': 'Agua, luz, teléfono...',
+      'Tributos': 'IRPF, IBI, tasas de ayuntamiento... Sin IVA.',
+      'Sueldos/salarios': 'Incluye IRPF y S.S. de empleados. Sin IVA.',
+      'S.S/autónomos': 'S.S. a cargo de la empresa de empleados y cuota de autónomo propia. Sin IVA.',
+      'Inversiones': 'Mobiliario, máquinas, vehículos...',
+      'Otros': 'Incluye seguros y bancos que no llevan IVA.'
+    };
+
+    function actualizarAyudaTipo(){
+      const ayuda = tipoAyudas[tipoCompraGasto.value];
+      tipoAyuda.textContent = ayuda || '';
+      tipoAyuda.classList.toggle('is-visible', Boolean(ayuda));
+    }
+
+    function normalizeNif(value){
+      return String(value || '').trim().toUpperCase();
+    }
+
+    function isValidNif(value){
+      const nif = normalizeNif(value);
+      if(!nif) return false;
+      return /^(?:\d{8}[A-Z]|[XYZ]\d{7}[A-Z]|[ABCDEFGHJNPQRSUVW]\d{7}[A-Z0-9])$/.test(nif);
+    }
+
+    function readNumber(id){
+      const value = Number(document.getElementById(id).value);
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function parseDDMMYY(s){
+      const m = /^(\d{2})\/(\d{2})\/(\d{2})$/.exec(s);
+      if(!m) return null;
+      const d = parseInt(m[1],10), mo = parseInt(m[2],10)-1, y = 2000 + parseInt(m[3],10);
+      const dt = new Date(y, mo, d);
+      if(dt.getFullYear()!==y || dt.getMonth()!==mo || dt.getDate()!==d) return null;
+      return dt;
+    }
+
+    function formatISODate(dt){
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth()+1).padStart(2,'0');
+      const d = String(dt.getDate()).padStart(2,'0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function validateBaseIva(id, label){
+      const input = document.getElementById(id);
+      const rawValue = input.value.trim();
+      input.setCustomValidity('');
+      if(rawValue === '') return true;
+      if(!/^\d+(?:\.\d{1,2})?$/.test(rawValue) || Number(rawValue) < 0){
+        input.setCustomValidity(`${label} debe ser un importe igual o mayor que 0 y con un máximo de dos decimales.`);
+        return false;
+      }
+      return true;
+    }
+
+    function setStatus(message){
+      status.textContent = message || '';
+    }
+
+    function formatMoney(value){
+      return `${Number(value || 0).toFixed(2).replace('.', ',')} €`;
+    }
+
+    function actualizarResultados(){
+      const baseIva4 = readNumber('iva4');
+      const baseIva10 = readNumber('iva10');
+      const baseIva21 = readNumber('iva21');
+      const baseIva0 = readNumber('iva0');
+      const retencionPorcentaje = readNumber('retPercent');
+      const cuotaIva4 = baseIva4 * 0.04;
+      const cuotaIva10 = baseIva10 * 0.10;
+      const cuotaIva21 = baseIva21 * 0.21;
+      const sumaBases = baseIva4 + baseIva10 + baseIva21 + baseIva0;
+      const totalIva = cuotaIva4 + cuotaIva10 + cuotaIva21;
+      const retencion = sumaBases * (retencionPorcentaje / 100);
+      const total = sumaBases + totalIva - retencion;
+
+      document.getElementById('resultadoIva4').textContent = formatMoney(cuotaIva4);
+      document.getElementById('resultadoIva10').textContent = formatMoney(cuotaIva10);
+      document.getElementById('resultadoIva21').textContent = formatMoney(cuotaIva21);
+      document.getElementById('resultadoRetencion').textContent = formatMoney(retencion);
+      document.getElementById('resultadoTotalIva').textContent = formatMoney(totalIva);
+      document.getElementById('resultadoTotalSinIva').textContent = formatMoney(sumaBases);
+      document.getElementById('resultadoTotal').textContent = formatMoney(total);
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      setStatus('');
+
+      const fechaTexto = (document.getElementById('fecha_text').value || '').trim();
+      const fecha = parseDDMMYY(fechaTexto);
+      if(!fecha){
+        setStatus('Indica una fecha de factura válida en formato dd/mm/aa.');
+        document.getElementById('fecha_text').reportValidity();
+        return;
+      }
+      const fechaISO = formatISODate(fecha);
+
+      const proveedorNombre = document.getElementById('proveedorNombre').value.trim();
+      const numeroFactura = document.getElementById('numeroFactura').value.trim();
+      const nifCif = normalizeNif(document.getElementById('nifCif').value);
+      const retPercent = readNumber('retPercent');
+
+      if(!form.reportValidity()) return;
+      const basesIvaValidas = [
+        validateBaseIva('iva4', 'Base IVA 4%'),
+        validateBaseIva('iva10', 'Base IVA 10%'),
+        validateBaseIva('iva21', 'Base IVA 21%'),
+        validateBaseIva('iva0', 'Base IVA 0%')
+      ].every(Boolean);
+      if(!basesIvaValidas){
+        const primeraBaseInvalida = ['iva4', 'iva10', 'iva21', 'iva0']
+          .map((id) => document.getElementById(id))
+          .find((input) => !input.checkValidity());
+        primeraBaseInvalida?.reportValidity();
+        return;
+      }
+      if(!isValidNif(nifCif)){
+        setStatus('Introduce un N.I.F. / C.I.F. válido.');
+        document.getElementById('nifCif').setCustomValidity('N.I.F. / C.I.F. no válido.');
+        document.getElementById('nifCif').reportValidity();
+        document.getElementById('nifCif').setCustomValidity('');
+        return;
+      }
+      if(retPercent < 0 || retPercent > 100){
+        setStatus('La retención debe estar entre 0% y 100%.');
+        return;
+      }
+
+      const payload = {
+        fecha_factura: fechaISO,
+        proveedor_nombre: proveedorNombre,
+        nif_cif: nifCif,
+        numero_factura: numeroFactura,
+        tipo_compra_gasto: tipoCompraGasto.value,
+        base_4: readNumber('iva4'),
+        base_10: readNumber('iva10'),
+        base_21: readNumber('iva21'),
+        base_0: readNumber('iva0'),
+        ret_percent: retPercent
+      };
+
+      guardarBtn.disabled = true;
+      setStatus('Guardando registro...');
+      try {
+        const resp = await fetch('/admin/api/libro-gastos-compras', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json().catch(() => ({}));
+        if(!resp.ok || !data.ok){
+          setStatus(data.error || 'No se pudo guardar el registro.');
+          guardarBtn.disabled = false;
+          return;
+        }
+        location.href = '/admin/libro-gastos-compras';
+      } catch(_error){
+        setStatus('Error de conexión. Inténtalo de nuevo.');
+        guardarBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('volverBtn').addEventListener('click', () => {
+      location.href = '/admin/libro-gastos-compras';
+    });
+    document.getElementById('cancelarBtn').addEventListener('click', () => {
+      location.href = '/admin/libro-gastos-compras';
+    });
+    document.getElementById('nifCif').addEventListener('input', (event) => {
+      event.target.value = event.target.value.toUpperCase();
+    });
+    const fechaPicker = document.getElementById('fecha_picker');
+    const fechaText = document.getElementById('fecha_text');
+    const calBtn = document.getElementById('open-cal');
+    if(fechaPicker){
+      fechaPicker.addEventListener('change', () => {
+        if(fechaPicker.value){
+          const [yy,mm,dd] = fechaPicker.value.split('-');
+          fechaText.value = `${dd}/${mm}/${yy.slice(2)}`;
+        }
+      });
+    }
+    if(calBtn && fechaPicker){
+      calBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        fechaPicker.focus({ preventScroll: true });
+        if(typeof fechaPicker.showPicker === 'function') fechaPicker.showPicker();
+        else fechaPicker.click();
+      });
+    }
+    tipoCompraGasto.addEventListener('change', actualizarAyudaTipo);
+    tipoCompraGasto.addEventListener('mouseenter', actualizarAyudaTipo);
+    tipoCompraGasto.addEventListener('focus', actualizarAyudaTipo);
+    ivaInputs.forEach((id) => {
+      document.getElementById(id).addEventListener('input', actualizarResultados);
+    });
+    actualizarResultados();
+
+    const selectProveedorBtn = document.getElementById('selectProveedorBtn');
+    const proveedorPickerModal = document.getElementById('proveedor-picker-modal');
+    const proveedorPickerBody = document.getElementById('proveedor-picker-body');
+    const proveedorPickerSearch = document.getElementById('proveedor-picker-search');
+    const proveedorPickerStatus = document.getElementById('proveedor-picker-status');
+    const proveedorPickerAccept = document.getElementById('proveedor-picker-accept');
+    const proveedorPickerCancel = document.getElementById('proveedor-picker-cancel');
+    const proveedorPickerClose = document.getElementById('proveedor-picker-close');
+    const PROVEEDOR_PICKER_LIMIT = 500;
+    let proveedoresDisponibles = [];
+    let proveedorSeleccionado = null;
+
+    function normalizeSearchText(value){
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+    }
+
+    function getFilteredProveedores(){
+      const term = normalizeSearchText(proveedorPickerSearch?.value || '');
+      if(!term) return [...proveedoresDisponibles];
+      return proveedoresDisponibles.filter((proveedor) => {
+        const nombre = normalizeSearchText(proveedor?.nombre || '');
+        const nif = normalizeSearchText(proveedor?.nif || '');
+        return nombre.includes(term) || nif.includes(term);
+      });
+    }
+
+    function updateProveedorPickerStatus(filteredCount){
+      if(!proveedorPickerStatus) return;
+      if(filteredCount === 0){
+        proveedorPickerStatus.textContent = 'No hay coincidencias para la búsqueda actual.';
+        return;
+      }
+      const total = proveedoresDisponibles.length;
+      if(filteredCount === total){
+        proveedorPickerStatus.textContent = `${total} proveedor(es) cargado(s). Selecciona uno y pulsa Aceptar.`;
+        return;
+      }
+      proveedorPickerStatus.textContent = `${filteredCount} resultado(s) de ${total} proveedor(es).`;
+    }
+
+    function renderProveedorPickerRows(rows){
+      if(!proveedorPickerBody) return;
+      proveedorPickerBody.innerHTML = '';
+      proveedorSeleccionado = null;
+      if(proveedorPickerAccept) proveedorPickerAccept.disabled = true;
+
+      if(!rows.length){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 3;
+        td.className = 'proveedor-picker-empty';
+        td.textContent = 'No hay proveedores disponibles.';
+        tr.appendChild(td);
+        proveedorPickerBody.appendChild(tr);
+        return;
+      }
+
+      rows.forEach((proveedor) => {
+        const tr = document.createElement('tr');
+        tr.className = 'proveedor-picker-row';
+
+        const tdNombre = document.createElement('td');
+        tdNombre.textContent = String(proveedor.nombre || '').trim() || '—';
+        const tdNif = document.createElement('td');
+        tdNif.textContent = String(proveedor.nif || '').trim() || '—';
+        const tdTelefono = document.createElement('td');
+        tdTelefono.textContent = String(proveedor.telefono || '').trim() || '—';
+
+        tr.appendChild(tdNombre);
+        tr.appendChild(tdNif);
+        tr.appendChild(tdTelefono);
+
+        tr.addEventListener('click', () => {
+          proveedorPickerBody.querySelectorAll('.proveedor-picker-row').forEach((row) => {
+            row.classList.remove('is-selected');
+          });
+          tr.classList.add('is-selected');
+          proveedorSeleccionado = proveedor;
+          if(proveedorPickerAccept) proveedorPickerAccept.disabled = false;
+        });
+
+        proveedorPickerBody.appendChild(tr);
+      });
+    }
+
+    function renderProveedorPickerFiltered(){
+      const filtered = getFilteredProveedores();
+      renderProveedorPickerRows(filtered);
+      updateProveedorPickerStatus(filtered.length);
+    }
+
+    function closeProveedorPickerModal(){
+      proveedorPickerModal?.classList.add('hidden');
+      proveedorPickerModal?.setAttribute('aria-hidden', 'true');
+    }
+
+    async function openProveedorPickerModal(){
+      if(!proveedorPickerModal || !proveedorPickerStatus) return;
+      proveedorPickerModal.classList.remove('hidden');
+      proveedorPickerModal.setAttribute('aria-hidden', 'false');
+      proveedorPickerStatus.classList.remove('error');
+      if(proveedorPickerSearch) proveedorPickerSearch.value = '';
+      proveedorPickerStatus.textContent = 'Cargando proveedores...';
+      renderProveedorPickerRows([]);
+
+      try {
+        const resp = await fetch(`/admin/api/proveedores?page=1&pageSize=${PROVEEDOR_PICKER_LIMIT}&sort=nombre&dir=asc`, {
+          credentials: 'same-origin'
+        });
+        const data = await resp.json().catch(() => ({}));
+        if(!resp.ok || data.ok === false){
+          throw new Error(data.error || 'No se pudieron cargar los proveedores.');
+        }
+        proveedoresDisponibles = Array.isArray(data.data) ? data.data : [];
+        renderProveedorPickerFiltered();
+        proveedorPickerSearch?.focus();
+      } catch(err){
+        console.error('Error cargando proveedores para selector:', err);
+        proveedoresDisponibles = [];
+        renderProveedorPickerRows([]);
+        proveedorPickerStatus.textContent = `Error al cargar proveedores: ${err?.message || 'desconocido'}`;
+        proveedorPickerStatus.classList.add('error');
+      }
+    }
+
+    function applyProveedorSeleccionado(proveedor){
+      if(!proveedor) return;
+      document.getElementById('proveedorNombre').value = proveedor.nombre || '';
+      document.getElementById('nifCif').value = (proveedor.nif || '').toUpperCase();
+    }
+
+    selectProveedorBtn?.addEventListener('click', openProveedorPickerModal);
+    proveedorPickerCancel?.addEventListener('click', closeProveedorPickerModal);
+    proveedorPickerClose?.addEventListener('click', closeProveedorPickerModal);
+    proveedorPickerModal?.addEventListener('click', (event) => {
+      if(event.target === proveedorPickerModal) closeProveedorPickerModal();
+    });
+    proveedorPickerAccept?.addEventListener('click', () => {
+      if(!proveedorSeleccionado) return;
+      applyProveedorSeleccionado(proveedorSeleccionado);
+      closeProveedorPickerModal();
+    });
+    proveedorPickerSearch?.addEventListener('input', () => {
+      renderProveedorPickerFiltered();
+    });
+    document.addEventListener('keydown', (event) => {
+      if(event.key === 'Escape' && proveedorPickerModal && !proveedorPickerModal.classList.contains('hidden')){
+        closeProveedorPickerModal();
+      }
+    });
+  </script>
+</body>
+</html>
