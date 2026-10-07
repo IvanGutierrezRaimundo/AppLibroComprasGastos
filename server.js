@@ -598,7 +598,7 @@ async function start() {
         port: Number(process.env.DB_PORT || 3306),
         user: process.env.DB_USER || 'root',
         password: process.env.DB_PASS || '',
-        database: process.env.DB_NAME || 'app_pedidos_guty',
+        database: process.env.DB_NAME || 'BD_app_libro_gastos_compras',
         dateStrings: true,
         waitForConnections: true,
         connectionLimit: 10,

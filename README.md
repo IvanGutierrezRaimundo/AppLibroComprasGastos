@@ -32,7 +32,7 @@ Se ha eliminado el sitio publico y el resto de modulos ajenos a este flujo.
 | `DB_PORT` | Puerto MySQL | `3306` |
 | `DB_USER` | Usuario MySQL | `root` |
 | `DB_PASS` | Contrasena MySQL | vacio |
-| `DB_NAME` | Base de datos | `app_pedidos_guty` |
+| `DB_NAME` | Base de datos | `BD_app_libro_gastos_compras` |
 | `DB_SSL` | Activa TLS si vale `true` | vacio |
 | `SESSION_SECRET` | Secreto de sesion | `change-me` |
 | `ADMIN_USER` | Usuario administrador | `admin` |

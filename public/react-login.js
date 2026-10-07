@@ -45,11 +45,6 @@
           { className: 'react-login-header', key: 'header' },
           [
             e('h1', { className: 'react-login-title', key: 'title' }, 'Libro de gastos y compras'),
-            e(
-              'p',
-              { className: 'react-login-subtitle', key: 'subtitle' },
-              'Accede al area privada desde una interfaz renderizada con React.'
-            ),
           ]
         ),
         e(
