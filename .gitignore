@@ -1,9 +1,9 @@
-__pycache__/
+node_modules/
 .env
 .env.local
 .env.development
 .env.production
-.pytest_cache/
-.venv/
+npm-debug.log*
+yarn-error.log*
 dist/
 build/

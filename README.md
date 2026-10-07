@@ -16,12 +16,12 @@ Se ha eliminado el sitio publico y el resto de modulos ajenos a este flujo.
 
 ## Stack
 
-- Python 3 + Flask (servidor con Waitress)
-- MySQL con `PyMySQL`
+- Node.js + Express
+- MySQL con `mysql2/promise`
 - React en cliente para el login, el formulario de creacion y la pantalla principal del libro
 - HTML, CSS y JavaScript para las pantallas multipagina
-- Sesion firmada en cookie para el acceso privado (React se sirve desde `public/vendor`, sin Node)
-- Tests con `pytest`
+- Sesion de servidor para el acceso privado
+- Tests con `node --test` y `supertest`
 
 ## Variables de entorno
 
@@ -37,7 +37,7 @@ Se ha eliminado el sitio publico y el resto de modulos ajenos a este flujo.
 | `SESSION_SECRET` | Secreto de sesion | `change-me` |
 | `ADMIN_USER` | Usuario administrador | `admin` |
 | `ADMIN_PASS_HASH` | Hash bcrypt de la contrasena | vacio |
-| `FLASK_ENV` | Con valor `production` activa la cookie segura | vacio |
+| `NODE_ENV` | En produccion activa cookie segura | vacio |
 
 Si `ADMIN_PASS_HASH` no esta definido, la contrasena por defecto es `admin123`. Cambiala antes de usar la aplicacion en produccion.
 
@@ -45,16 +45,14 @@ Si `ADMIN_PASS_HASH` no esta definido, la contrasena por defecto es `admin123`. 
 
 ```powershell
 Push-Location "C:\Users\Guty\Desktop\AppLibroComprasGastos"
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python app.py
+npm install
+npm start
 ```
 
-Tests:
+Desarrollo con recarga:
 
 ```powershell
-python -m pytest
+npm run dev
 ```
 
 ## Rutas principales
